@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="de-DE" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AiBATROS – Maßnahmenplan 2027</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Roboto',sans-serif;font-size:13px;color:#2b2b2b;background:#fff;display:flex;height:100vh;overflow:hidden}
+
+/* LEFT MENU */
+.left-menu{width:200px;min-width:200px;background:#2b2b2b;display:flex;flex-direction:column;height:100vh;overflow:hidden;flex-shrink:0}
+.left_menu_logo{padding:10px 14px;display:flex;align-items:center;justify-content:flex-start;border-bottom:1px solid #444;flex-shrink:0}
+.menu_Wrapper{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 0}
+.menu_Wrapper::-webkit-scrollbar{width:3px}
+.menu_Wrapper::-webkit-scrollbar-thumb{background:#555}
+.menu_item_group{display:flex;align-items:center;gap:9px;padding:9px 14px;cursor:pointer;font-size:12px;color:#aaa;transition:background .15s;border-left:3px solid transparent;white-space:nowrap;overflow:hidden;text-decoration:none}
+.menu_item_group:hover{background:#383838;color:#ddd}
+.menu_item_group.active{color:#FCB03B;border-left-color:#FCB03B;background:#333}
+.menu_item_group i{width:16px;text-align:center;font-size:13px;flex-shrink:0}
+
+/* TREE PANEL */
+.tree-panel{width:205px;min-width:205px;background:#fff;border-right:1px solid #e0e0e0;display:flex;flex-direction:column;height:100vh;overflow:hidden;flex-shrink:0}
+.tree-top{padding:6px 8px 0 8px;flex-shrink:0}
+.tree-search-row{display:flex;gap:3px;align-items:center;margin-bottom:4px}
+.tree-input-wrap{flex:1;display:flex;align-items:center;border:1px solid #ccc;border-radius:3px;padding:3px 6px;background:#fff;gap:4px}
+.tree-input-wrap input{border:none;outline:none;font-size:11px;color:#333;width:100%;font-family:inherit}
+.tree-input-wrap i{color:#aaa;font-size:10px;flex-shrink:0}
+.tree-dropdown{border:1px solid #ccc;border-radius:3px;padding:3px 5px;font-size:11px;outline:none;background:#fff;color:#555;cursor:pointer;flex-shrink:0}
+.tree-filter-btn{background:#FCB03B;color:white;border:none;border-radius:3px;padding:4px 8px;cursor:pointer;font-size:11px;flex-shrink:0}
+.tree-active-filter{background:#FCB03B;color:white;padding:4px 10px 4px 10px;font-size:11px;display:flex;align-items:center;gap:4px;margin:0 -0px 0 -0px}
+.tree-active-filter b{font-weight:700}
+.tree-active-filter i{cursor:pointer;font-size:10px;margin-left:auto}
+.tree-nodes{flex:1;overflow-y:auto}
+.tree-nodes::-webkit-scrollbar{width:4px}
+.tree-nodes::-webkit-scrollbar-thumb{background:#ddd}
+.node-item{display:flex;align-items:center;padding:10px 12px 10px 0;border-top:1px solid #e6e6e6;cursor:pointer;font-size:12px;color:#333;position:relative;transition:background .1s}
+.node-item:hover{background:#f8f8f8}
+.node-item.selected{background:#f5f5f5}
+.node-caret{padding:0 4px 0 10px;color:#888;font-size:11px;flex-shrink:0}
+.node-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:calc(100% - 70px)}
+.node-badge{min-width:24px;height:24px;display:flex;justify-content:center;align-items:center;background:white;border-radius:3px;position:absolute;right:10px;font-size:12px;font-weight:300;border:1px solid #e0e0e0}
+.tree-add-area{padding:8px;border-top:1px solid #e0e0e0;flex-shrink:0;position:relative;min-height:50px}
+.add-obj-btn{background:#2b2b2b;color:white;border:none;border-radius:3px;padding:7px 12px;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:6px;position:absolute;bottom:10px;right:10px}
+.add-obj-btn:hover{background:#444}
+
+/* REACT CONTENT */
+.react_content{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.Header_view_wrapper{background:#fff;border-bottom:1px solid #e0e0e0;padding:0 16px;flex-shrink:0}
+.breadcrumb_area{padding:6px 0 0 0}
+.page_breadcrumb{display:flex;align-items:center;gap:4px;font-size:12px;padding-bottom:4px}
+.small_headline_gray{color:#999;text-decoration:none;font-size:12px}
+.small_headline_gray:hover{color:#FCB03B}
+.big_headline{font-weight:700;font-size:14px;color:#2b2b2b;text-decoration:none}
+.page_breadcrumb i{color:#bbb;font-size:11px}
+.DropDown_Component{display:inline-flex}
+.select{border:1px solid #e0e0e0;border-radius:3px;padding:3px 8px;font-size:12px;background:#fff;cursor:pointer;display:flex;align-items:center;gap:5px;color:#555}
+.tree_breadcrumb{padding:2px 0 6px;font-size:12px;color:#888}
+.tree_position.caption{display:flex;align-items:center;gap:2px;flex-wrap:wrap}
+.tree_position.caption .bold{font-weight:700;color:#2b2b2b}
+.tree_position.caption i{font-size:10px;color:#bbb}
+
+/* Target bar */
+.Target_Component{display:flex;align-items:center;gap:10px;padding:6px 16px;border-bottom:1px solid #e0e0e0;background:#fff;flex-shrink:0}
+.target_title{font-weight:700;font-size:12px;color:#2b2b2b;flex-shrink:0}
+.target_param{color:#888;font-size:12px}
+
+/* MAIN BODY */
+.CompareObjects_Component{flex:1;background:#f0f0f0;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.CompareObjects_Component::-webkit-scrollbar{width:5px}
+.CompareObjects_Component::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px}
+
+/* Accordion */
+.accordion-section{background:#fff;border:1px solid #e0e0e0;border-radius:3px;overflow:hidden}
+.accordion-header{padding:8px 14px;border-bottom:1px solid #e0e0e0;background:#f8f8f8;display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none}
+.accordion-header .a-title{font-weight:500;font-size:12px;color:#2b2b2b}
+.accordion-header i.fa-info-circle{color:#bbb;font-size:11px;margin-left:2px}
+.accordion-header i.chevron{color:#aaa;font-size:10px}
+.accordion-body{display:block}
+
+/* Chart + Map */
+.DataVisualization_Component{display:flex;gap:0;padding:14px 14px 10px 14px;align-items:flex-start}
+.chart-flex{flex:1;min-width:0}
+.map-container{width:290px;height:200px;flex-shrink:0;border:1px solid #ddd;border-radius:3px;overflow:hidden;position:relative;margin-left:12px}
+.bar-svg{width:100%;height:240px;overflow:visible;display:block}
+.bar-rect{cursor:pointer;transition:fill .2s}
+.map-bg-wrap{width:100%;height:100%;position:relative}
+.map-tabs-row{position:absolute;top:6px;right:6px;z-index:3;display:flex;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.map-tab-btn{padding:3px 10px;font-size:10px;font-weight:500;cursor:pointer;background:white;border:1px solid #ccc;border-right:none}
+.map-tab-btn:last-child{border-right:1px solid #ccc}
+.map-tab-btn.active{background:#f8f8f8;font-weight:700}
+.map-pin{position:absolute;width:12px;height:12px;border-radius:50%;background:#333;border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.4);cursor:pointer;transform:translate(-50%,-50%);transition:all .2s;z-index:2}
+.map-pin.active{background:#FCB03B;width:16px;height:16px;animation:pinPulse 1.5s infinite}
+@keyframes pinPulse{0%,100%{box-shadow:0 0 0 0 rgba(252,176,59,.5)}50%{box-shadow:0 0 0 8px rgba(252,176,59,0)}}
+
+/* Object list */
+.ObjectListContent_Component{overflow-x:auto}
+.ObjectList_table{width:100%;border-collapse:collapse;font-size:12px;min-width:900px}
+.ObjectList_table thead th{padding:7px 12px;background:#fff;border-bottom:2px solid #e0e0e0;text-align:left;font-weight:400;font-size:11px;color:#888;position:sticky;top:0;z-index:1;white-space:nowrap}
+.ObjectList_table tbody tr{border-bottom:1px solid #f0f0f0;cursor:pointer;transition:background .1s}
+.ObjectList_table tbody tr:hover{background:#f8f8f8}
+.ObjectList_table tbody tr.selected{background:#fff8ee}
+.ObjectList_table tbody td{padding:7px 12px;color:#666;vertical-align:middle;white-space:nowrap}
+.rank-td{font-size:14px;font-weight:400;color:#2b2b2b;padding-left:16px!important}
+.photo-td{width:56px;padding:3px 6px!important}
+.photo-thumb{width:42px;height:32px;border-radius:3px;display:inline-block;border:1px solid #ddd}
+.eff-box{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;color:white;font-weight:700;font-size:12px;border-radius:2px}
+.co2-td{border-left:1px solid #e0e0e0!important;font-weight:500;color:#2b2b2b}
+.checkmark-icon{color:#50a8a8;margin-left:8px;font-size:13px}
+
+/* Pagination */
+.list-pagination{display:flex;align-items:center;justify-content:flex-end;padding:7px 14px;border-top:1px solid #f0f0f0;gap:5px;font-size:11px;color:#888}
+.pag-btn{border:1px solid #e0e0e0;background:#fff;padding:3px 9px;border-radius:3px;cursor:pointer;font-size:11px;color:#555}
+.pag-active{font-weight:700;border:1px solid #FCB03B;padding:3px 9px;border-radius:3px;color:#FCB03B}
+.page-size-select{border:1px solid #e0e0e0;border-radius:3px;padding:2px 4px;font-size:11px;outline:none;background:#fff}
+
+/* BOTTOM PANEL */
+.MeasurePlanBottomPanel_Component{flex-shrink:0;border-top:1px solid #e0e0e0;background:#fff}
+.bottom-panel-header{padding:5px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #e0e0e0;flex-wrap:nowrap;min-height:36px;overflow:hidden}
+.bp-name{font-weight:700;font-size:11px;letter-spacing:.4px;text-transform:uppercase;white-space:nowrap}
+.bp-status-dot{width:8px;height:8px;border-radius:50%;background:#50a8a8;flex-shrink:0}
+.bp-variant-text{font-size:11px;white-space:nowrap}
+.bp-divider{width:1px;height:16px;background:#d0d0d0;flex-shrink:0}
+.bp-objects{font-weight:600;font-size:11px;white-space:nowrap}
+.bp-goal{font-weight:600;font-size:11px;white-space:nowrap}
+.bp-calc-hint{color:#aaa;font-size:11px;white-space:nowrap}
+.show-planning-btn{margin-left:auto;display:flex;align-items:center;gap:5px;border:1px solid #ccc;border-radius:3px;padding:5px 10px;cursor:pointer;font-size:11px;font-weight:600;color:#2b2b2b;background:#fff;transition:all .18s;white-space:nowrap;letter-spacing:.3px;text-transform:uppercase;flex-shrink:0}
+.show-planning-btn:hover,.show-planning-btn.lit{background:#FCB03B;color:white;border-color:#FCB03B}
+.show-planning-btn.lit{box-shadow:0 0 0 3px rgba(252,176,59,.25)}
+.KPIList_Component{display:flex}
+.indicator_item{flex:1;padding:10px 20px;text-align:center;border-right:1px solid #e0e0e0}
+.indicator_item:last-child{border-right:none}
+.indicator_value{font-size:20px;font-weight:700;color:#3a8a3a}
+.indicator_value.range_good{color:#3a8a3a}
+.indicator_label{font-size:11px;color:#aaa;margin-top:2px}
+@keyframes kpiPop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+
+/* Toast / Tooltip */
+.toast-msg{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);background:#2b2b2b;color:white;padding:8px 16px;border-radius:4px;font-size:12px;opacity:0;transition:opacity .2s,transform .2s;z-index:9999;pointer-events:none;box-shadow:0 3px 10px rgba(0,0,0,.3);white-space:nowrap}
+.toast-msg.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.tip-box{position:fixed;background:#333;color:white;padding:6px 10px;border-radius:3px;font-size:11px;max-width:300px;z-index:10000;pointer-events:none;display:none;line-height:1.5;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+</style>
+</head>
+<body>
+
+<!-- LEFT MENU -->
+<div class="left-menu">
+  <div class="left_menu_logo">
+    <svg viewBox="0 0 167.24 173.33" width="27" height="27" xmlns="http://www.w3.org/2000/svg">
+      <path d="m42.34,157.59L0,173.33l62.26-81-19.92,65.27Zm79.95-38.73l-57.41-25.94-12.38,41.17,69.79-15.23Zm.33-2.39L83.63,29.95l-18.41,60.42,57.41,26.11Zm2.78,0l19.63-38.16-33.47,7.36,13.85,30.8Zm22.26-37.64l-8.78,17.02,28.36-5.97-19.58-11.05ZM80.75,29.12L11.96,0l50.53,89.56" fill="#FCB03B"/>
+    </svg>
+  </div>
+  <div class="menu_Wrapper">
+    <div class="menu_item_group active" style="color:#FCB03B;border-left-color:#FCB03B;background:#333">
+      <i class="fas fa-sitemap"></i><span>Strukturbäume</span>
+    </div>
+    <a class="menu_item_group" href="#" onclick="toast('Dashboard');return false"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+    <a class="menu_item_group" href="#" onclick="toast('Datenmanagement');return false"><i class="fas fa-file-alt"></i><span>Datenmanagement</span></a>
+    <a class="menu_item_group" href="#" onclick="toast('Objektbewertung');return false"><i class="fas fa-clipboard-check"></i><span>Objektbewertung</span></a>
+    <a class="menu_item_group" href="#" onclick="toast('Energie');return false"><i class="fas fa-bolt"></i><span>Energie</span></a>
+    <a class="menu_item_group" href="#" onclick="toast('Reporting');return false"><i class="fas fa-file-invoice"></i><span>Reporting</span></a>
+    <a class="menu_item_group" href="#" onclick="toast('Simulation');return false"><i class="fas fa-chart-line"></i><span>Simulation</span></a>
+    <a class="menu_item_group" href="#" style="color:#FCB03B"><i class="fas fa-calendar-alt"></i><span>Jährliche Maßnahmenpläne</span></a>
+    <a class="menu_item_group" href="#" onclick="toast('Portfoliomanagement');return false"><i class="fas fa-chart-area"></i><span>Portfoliomanagement</span></a>
+    <a class="menu_item_group" href="#" onclick="toast('Budgetplanung');return false"><i class="fas fa-chart-column"></i><span>Budgetplanung</span></a>
+    <a class="menu_item_group" href="#" onclick="toast('Investitionsrechnung');return false"><i class="fas fa-calculator"></i><span>Investitionsrechnung</span></a>
+  </div>
+</div>
+
+<!-- TREE PANEL -->
+<div class="tree-panel">
+  <div class="tree-top">
+    <div class="tree-search-row">
+      <div class="tree-input-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" value="enten" id="tree-search" placeholder="Suche..." oninput="filterNodes(this.value)">
+        <span style="color:#bbb;cursor:pointer;font-size:11px" onclick="clearSearch()">x</span>
+      </div>
+      <select class="tree-dropdown"><option>Objekte</option></select>
+      <button class="tree-filter-btn" title="Filtern"><i class="fas fa-filter"></i></button>
+    </div>
+    <div class="tree-active-filter">
+      <span>Aktiver Filter:&nbsp;<b>Nur Gebäude</b></span>
+      <i class="fas fa-times-circle"></i>
+    </div>
+  </div>
+  <div class="tree-nodes" id="tree-nodes">
+    <div class="node-item" style="padding-left:0" onclick="toggleNode('n-de')">
+      <i class="fas fa-angle-down node-caret"></i><div class="node-label">Europa</div>
+    </div>
+    <div id="n-de">
+      <div class="node-item" style="padding-left:0" onclick="toggleNode('n-wb')">
+        <i class="fas fa-angle-down node-caret" style="padding-left:25px"></i><div class="node-label">Deutschland</div>
+      </div>
+      <div id="n-wb">
+        <div class="node-item" style="padding-left:0" onclick="toggleNode('n-qe')">
+          <i class="fas fa-angle-down node-caret" style="padding-left:40px"></i><div class="node-label">Wolfsburg</div>
+        </div>
+        <div id="n-qe">
+          <div class="node-item" style="padding-left:0" onclick="toggleNode('n-we2300')">
+            <i class="fas fa-angle-down node-caret" style="padding-left:55px"></i><div class="node-label">Quartier Entenbach</div>
+          </div>
+          <div id="n-we2300">
+            <div class="node-item selected" style="padding-left:0" onclick="toast('WE 2300 aktiv')">
+              <i class="fas fa-angle-right node-caret" style="padding-left:70px"></i><div class="node-label">WE 2300</div>
+              <div class="node-badge">5</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="tree-add-area">
+    <button class="add-obj-btn" onclick="toast('Objekt hinzufügen...')">
+      <i class="fas fa-plus"></i> Objekt hinzufügen
+    </button>
+  </div>
+</div>
+
+<!-- REACT CONTENT -->
+<div class="react_content">
+
+  <!-- HEADER -->
+  <div class="Header_view_wrapper">
+    <div class="breadcrumb_area">
+      <div class="page_breadcrumb">
+        <a class="small_headline_gray" href="#">Jährliche Maßnahmenpläne</a>
+        <i class="fas fa-angle-right"></i>
+        <a class="big_headline" href="#">Maßnahmenplan 2027</a>
+        <i class="fas fa-angle-right"></i>
+        <div class="DropDown_Component">
+          <div class="select" onclick="toast('Variante wechseln...')">
+            <span>2027.02</span>
+            <span style="display:inline-flex;align-items:center;margin-left:4px"><i class="fas fa-circle" style="color:#50a8a8;font-size:8px"></i></span>
+          </div>
+        </div>
+      </div>
+      <div class="tree_breadcrumb">
+        <div class="tree_position caption">
+          Europa&nbsp;<i class="fas fa-angle-right"></i>&nbsp;Deutschland&nbsp;<i class="fas fa-angle-right"></i>&nbsp;…&nbsp;<i class="fas fa-angle-right"></i>&nbsp;Quartier Entenbach<span class="bold">&nbsp;<i class="fas fa-angle-right"></i>&nbsp;WE 2300</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLANUNGSZIEL -->
+  <div class="Target_Component">
+    <div class="target_title">Planungsziel</div>
+    <div class="select" style="cursor:not-allowed;background:#f8f8f8">CO2-Einsparung (absolut)</div>
+    <i class="fas fa-info-circle" style="color:#bbb;font-size:11px;cursor:pointer" data-tip="Die resultierende bedarfsbasierte CO2-Einsparung absolut ergibt sich aus der durch auf Elementtypen geplanten Maßnahmen."></i>
+    <span style="color:#bbb;margin:0 4px">|</span>
+    <span class="target_param">Die Reihenfolge der Objekte basiert auf ihrem Optimierungspotenzial für das ausgewählte Ziel</span>
+  </div>
+
+  <!-- MAIN SCROLL -->
+  <div class="CompareObjects_Component">
+
+    <!-- CHART ACCORDION -->
+    <div class="accordion-section">
+      <div class="accordion-header" onclick="toggleAcc('acc-chart','chev-chart')">
+        <i class="fas fa-chevron-down chevron" id="chev-chart"></i>
+        <span class="a-title">Ranking-Balkendiagramm und Karte</span>
+        <i class="fas fa-info-circle" data-tip="Ranking der Objekte nach CO2-Einsparpotenzial. Balken anklicken zum Auswählen."></i>
+      </div>
+      <div class="accordion-body" id="acc-chart">
+        <div class="DataVisualization_Component">
+          <!-- BAR CHART -->
+          <div class="chart-flex">
+            <svg class="bar-svg" id="bar-svg" viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg">
+              <!-- Y axis labels -->
+              <text x="68" y="223" text-anchor="end" fill="#888" font-size="10.5">0 kg</text>
+              <text x="68" y="179" text-anchor="end" fill="#888" font-size="10.5">118.908 kg</text>
+              <text x="68" y="135" text-anchor="end" fill="#888" font-size="10.5">237.815 kg</text>
+              <text x="68" y="91"  text-anchor="end" fill="#888" font-size="10.5">356.723 kg</text>
+              <text x="68" y="47"  text-anchor="end" fill="#888" font-size="10.5">475.630 kg</text>
+              <!-- Horizontal grid lines -->
+              <line x1="74" y1="220" x2="750" y2="220" stroke="#E6E6E6" stroke-width="1" stroke-dasharray="5 5"/>
+              <line x1="74" y1="176" x2="750" y2="176" stroke="#E6E6E6" stroke-width="1" stroke-dasharray="5 5"/>
+              <line x1="74" y1="132" x2="750" y2="132" stroke="#E6E6E6" stroke-width="1" stroke-dasharray="5 5"/>
+              <line x1="74" y1="88"  x2="750" y2="88"  stroke="#E6E6E6" stroke-width="1" stroke-dasharray="5 5"/>
+              <line x1="74" y1="44"  x2="750" y2="44"  stroke="#E6E6E6" stroke-width="1" stroke-dasharray="5 5"/>
+              <!-- X axis -->
+              <line x1="74" y1="220" x2="750" y2="220" stroke="#888" stroke-width="1"/>
+              <!-- Bars: proportional heights (max=176px for 594.538kg) -->
+              <rect class="bar-rect" id="b1" data-rank="1" x="88"  y="44"  width="120" height="176" fill="#484848"/>
+              <text x="148" y="234" text-anchor="middle" fill="#888" font-size="11">1</text>
+              <rect class="bar-rect" id="b2" data-rank="2" x="222" y="150" width="120" height="70"  fill="#484848"/>
+              <text x="282" y="234" text-anchor="middle" fill="#888" font-size="11">2</text>
+              <rect class="bar-rect" id="b3" data-rank="3" x="356" y="165" width="120" height="55"  fill="#484848"/>
+              <text x="416" y="234" text-anchor="middle" fill="#888" font-size="11">3</text>
+              <rect class="bar-rect" id="b4" data-rank="4" x="490" y="177" width="120" height="43"  fill="#484848"/>
+              <text x="550" y="234" text-anchor="middle" fill="#888" font-size="11">4</text>
+              <rect class="bar-rect" id="b5" data-rank="5" x="624" y="210" width="120" height="10"  fill="#484848"/>
+              <text x="684" y="234" text-anchor="middle" fill="#888" font-size="11">5</text>
+            </svg>
+          </div>
+          <!-- MAP -->
+          <div class="map-container">
+            <div class="map-bg-wrap">
+              <svg width="100%" height="100%" style="position:absolute;top:0;left:0;display:block">
+                <rect width="100%" height="100%" fill="#e4e8da"/>
+                <line x1="0" y1="70" x2="290" y2="70" stroke="#fff" stroke-width="2.5" opacity=".8"/>
+                <line x1="0" y1="125" x2="290" y2="105" stroke="#fff" stroke-width="1.5" opacity=".6"/>
+                <line x1="68" y1="0" x2="75" y2="200" stroke="#fff" stroke-width="1.5" opacity=".6"/>
+                <line x1="158" y1="0" x2="165" y2="200" stroke="#fff" stroke-width="1" opacity=".5"/>
+                <line x1="232" y1="0" x2="240" y2="200" stroke="#fff" stroke-width="1" opacity=".4"/>
+                <rect x="82" y="16" width="58" height="38" fill="#d0d8c4" rx="2"/>
+                <rect x="172" y="16" width="50" height="32" fill="#d0d8c4" rx="2"/>
+                <rect x="82" y="84" width="64" height="28" fill="#d0d8c4" rx="2"/>
+                <rect x="172" y="88" width="50" height="24" fill="#d0d8c4" rx="2"/>
+                <rect x="22" y="140" width="36" height="32" fill="#d0d8c4" rx="2" opacity=".7"/>
+                <rect x="84" y="144" width="68" height="38" fill="#d0d8c4" rx="2" opacity=".7"/>
+              </svg>
+              <div class="map-tabs-row">
+                <button class="map-tab-btn active" onclick="mapTab(this)">Karte</button>
+                <button class="map-tab-btn" onclick="mapTab(this)">Satellit</button>
+              </div>
+              <div class="map-pin" id="pin1" style="left:41%;top:36%" title="Entenbachstraße 21 (Rank 1)" onclick="selectRow(1)"></div>
+              <div class="map-pin" id="pin2" style="left:56%;top:44%" title="Entenbachstraße 22 (Rank 2)" onclick="selectRow(2)"></div>
+              <div class="map-pin" id="pin3" style="left:48%;top:57%" title="Entenbachstraße 23 (Rank 3)" onclick="selectRow(3)"></div>
+              <div class="map-pin active" id="pin4" style="left:37%;top:66%" title="Entenbachstraße 20 (Rank 4)" onclick="selectRow(4)"></div>
+              <div class="map-pin" id="pin5" style="left:64%;top:27%" title="Entenbachstraße 18 (Rank 5)" onclick="selectRow(5)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OBJECT LIST ACCORDION -->
+    <div class="accordion-section">
+      <div class="accordion-header" onclick="toggleAcc('acc-list','chev-list')">
+        <i class="fas fa-chevron-down chevron" id="chev-list"></i>
+        <span class="a-title">Objektliste nach Ziel geordnet</span>
+        <i class="fas fa-info-circle" data-tip="Klicken Sie auf eine Zeile um das Objekt in die Planung aufzunehmen."></i>
+      </div>
+      <div class="accordion-body" id="acc-list">
+        <div class="ObjectListContent_Component">
+          <table class="ObjectList_table">
+            <thead>
+              <tr>
+                <th style="padding-left:16px">Rank</th>
+                <th></th>
+                <th>WE</th>
+                <th>UE</th>
+                <th>Adresse</th>
+                <th>Primärer Energieträger Heizung</th>
+                <th>Energieeffizienzklasse basierend auf AiBATROS-Bedarf</th>
+                <th class="co2-td" style="border-left:1px solid #e0e0e0">CO2-Einsparung (absolut)</th>
+              </tr>
+            </thead>
+            <tbody id="obj-tbody"></tbody>
+          </table>
+        </div>
+        <div class="list-pagination">
+          <button class="pag-btn">‹</button>
+          <span class="pag-active">1</span>
+          <button class="pag-btn">›</button>
+          <span style="margin-left:14px">Einträge pro Seite:</span>
+          <select class="page-size-select"><option>10</option><option>25</option><option>50</option></select>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end CompareObjects_Component -->
+
+  <!-- BOTTOM PANEL -->
+  <div class="MeasurePlanBottomPanel_Component">
+    <div class="bottom-panel-header">
+      <span class="bp-name">Massnahmenplan 2027</span>
+      <i class="fas fa-circle bp-status-dot" style="font-size:8px;color:#50a8a8"></i>
+      <span class="bp-variant-text">2027.02</span>
+      <div class="bp-divider"></div>
+      <span class="bp-objects">geplante Objekte: <span id="bp-count">1</span></span>
+      <div class="bp-divider"></div>
+      <span class="bp-goal">Planungsziel: CO2-Einsparung (absolut)</span>
+      <i class="fas fa-info-circle" style="font-size:11px;color:#bbb;cursor:pointer" data-tip="Die KPI-Werte werden mit den geplanten Objekten in der Variante berechnet."></i>
+      <div class="bp-divider"></div>
+      <span class="bp-calc-hint">KPI-Berechnung basierend auf geplanten Objekten</span>
+      <button class="show-planning-btn lit" id="show-plan-btn" onclick="openPlan()">
+        <i class="fas fa-chevron-right"></i> PLANUNG ANZEIGEN
+      </button>
+    </div>
+    <div class="KPIList_Component">
+      <div class="indicator_item">
+        <div class="indicator_value range_good" id="kpi-co2" style="animation:kpiPop .4s ease">146 T kg</div>
+        <div class="indicator_label">CO2 Einsparung gegenüber Ist-Zustand (absolut)</div>
+      </div>
+      <div class="indicator_item">
+        <div class="indicator_value range_good" id="kpi-pct" style="animation:kpiPop .5s ease">97 %</div>
+        <div class="indicator_label">CO2 Einsparung gegenüber Ist-Zustand (%)</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end react_content -->
+
+<div class="tip-box" id="tip-box"></div>
+<div class="toast-msg" id="toast"></div>
+
+<script>
+const OBJS=[
+  {rank:1,we:'2300',ue:'113',addr:'Entenbachstraße 21',   energy:'Öl',           eff:'H',col:'rgb(99,37,35)',  co2:'594.538 kg',planned:false,bgPhoto:'#d8e2d0'},
+  {rank:2,we:'2300',ue:'104',addr:'Entenbachstraße 22',   energy:'Fern-/Nahwärme',eff:'H',col:'rgb(99,37,35)',  co2:'235.851 kg',planned:false,bgPhoto:'#d0d8e2'},
+  {rank:3,we:'2300',ue:'105',addr:'Entenbachstraße 23',   energy:'Öl',           eff:'H',col:'rgb(99,37,35)',  co2:'184.709 kg',planned:false,bgPhoto:'#e2d0d0'},
+  {rank:4,we:'2300',ue:'102',addr:'Entenbachstraße 20',   energy:'Öl',           eff:'H',col:'rgb(99,37,35)',  co2:'145.521 kg',planned:true, bgPhoto:'#e2e0d0'},
+  {rank:5,we:'2300',ue:'101',addr:'Entenbachstraße 18',   energy:'Gas zentral',  eff:'E',col:'rgb(224,123,48)',co2:'32.580 kg', planned:false,bgPhoto:'#d0e2e2'},
+];
+let SEL=4;
+
+function renderTable(){
+  const tb=document.getElementById('obj-tbody');
+  tb.innerHTML='';
+  OBJS.forEach(o=>{
+    const tr=document.createElement('tr');
+    if(o.rank===SEL) tr.classList.add('selected');
+    tr.onclick=()=>selectRow(o.rank);
+    tr.innerHTML=`
+      <td class="rank-td">${o.rank}</td>
+      <td class="photo-td"><span class="photo-thumb" style="background:${o.bgPhoto}"></span></td>
+      <td>${o.we}</td>
+      <td>${o.ue}</td>
+      <td style="color:#2b2b2b">${o.addr}</td>
+      <td>${o.energy}</td>
+      <td><div class="eff-box" style="background:${o.col}">${o.eff}</div></td>
+      <td class="co2-td">${o.co2}${o.planned?'<i class="fas fa-check checkmark-icon"></i>':''}</td>`;
+    tb.appendChild(tr);
+  });
+  syncBars();
+  syncPins();
+}
+
+function selectRow(rank){
+  SEL=rank;
+  const o=OBJS.find(x=>x.rank===rank);
+  renderTable();
+  toast(o.addr+' ausgewählt');
+  if(!o.planned){
+    o.planned=true;
+    setTimeout(()=>{renderTable();recalcKPIs();},600);
+  }
+}
+
+function syncBars(){
+  document.querySelectorAll('.bar-rect').forEach(r=>{
+    const rk=parseInt(r.dataset.rank);
+    r.setAttribute('fill',rk===SEL?'#FCB03B':'#484848');
+    r.setAttribute('opacity',rk===SEL?'1':'1');
+  });
+}
+function syncPins(){
+  for(let i=1;i<=5;i++){
+    const p=document.getElementById('pin'+i);
+    if(!p)continue;
+    p.classList.toggle('active',i===SEL);
+  }
+}
+
+function recalcKPIs(){
+  const n=OBJS.filter(o=>o.planned).length;
+  document.getElementById('bp-count').textContent=n;
+  // approximate cumulative savings
+  const totals=[[0,0],[594,100],[830,100],[1014,100],[1147,97],[1159,97]];
+  const v=totals[Math.min(n,5)];
+  animKPI('kpi-co2',v[0]+' T kg');
+  animKPI('kpi-pct',v[1]+' %');
+}
+
+function animKPI(id,v){
+  const el=document.getElementById(id);
+  el.style.animation='none';el.offsetHeight;
+  el.style.animation='kpiPop .4s ease';
+  el.textContent=v;
+}
+
+function toggleAcc(bodyId,chevId){
+  const b=document.getElementById(bodyId),c=document.getElementById(chevId);
+  const h=b.style.display==='none';
+  b.style.display=h?'block':'none';
+  c.className=(h?'fas fa-chevron-down':'fas fa-chevron-right')+' chevron';
+}
+
+function toggleNode(id){
+  const el=document.getElementById(id);if(!el)return;
+  el.style.display=el.style.display==='none'?'block':'none';
+}
+
+function filterNodes(v){
+  document.querySelectorAll('.node-item').forEach(n=>{
+    n.style.opacity=v&&!n.textContent.toLowerCase().includes(v.toLowerCase())?.35:1;
+  });
+}
+function clearSearch(){
+  document.getElementById('tree-search').value='';
+  filterNodes('');
+}
+function mapTab(btn){
+  btn.parentElement.querySelectorAll('.map-tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function openPlan(){window.location.href='506.html';}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),2200);
+}
+// Tooltips
+const tipBox=document.getElementById('tip-box');
+document.querySelectorAll('[data-tip]').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{tipBox.textContent=el.dataset.tip;tipBox.style.display='block'});
+  el.addEventListener('mousemove',e=>{tipBox.style.left=(e.clientX+12)+'px';tipBox.style.top=(e.clientY-34)+'px'});
+  el.addEventListener('mouseleave',()=>tipBox.style.display='none');
+});
+// Bar hover
+document.querySelectorAll('.bar-rect').forEach(r=>{
+  r.addEventListener('mouseenter',()=>{if(parseInt(r.dataset.rank)!==SEL)r.style.filter='brightness(1.4)';});
+  r.addEventListener('mouseleave',()=>{r.style.filter='';});
+});
+
+renderTable();
+</script>
+</body>
+</html>
