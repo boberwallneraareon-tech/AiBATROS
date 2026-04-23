@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AiBATROS – Maßnahmenplan 2027</title>
+  <style>
+    :root{
+      --bg:#f3f4f6;
+      --panel:#ffffff;
+      --line:#d7d7d7;
+      --line-2:#ececec;
+      --text:#262626;
+      --muted:#7c7c7c;
+      --sidebar:#4b4b4b;
+      --sidebar-dark:#3d3d3d;
+      --accent:#f0ab2d;
+      --accent-dark:#cb8b16;
+      --accent-soft:#fbf2df;
+      --green:#2f9c58;
+      --green-soft:#dff3e6;
+      --red:#863f3a;
+      --yellow:#e1c332;
+      --shadow:0 10px 24px rgba(0,0,0,.08);
+      --blue:#3a8fb7;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      overflow:hidden;
+    }
+
+    .app{
+      display:grid;
+      grid-template-columns:40px 295px minmax(0,1fr);
+      height:100vh;
+      width:100vw;
+    }
+
+    .iconbar{
+      background:var(--sidebar-dark);
+      color:#f3f3f3;
+      display:flex;
+      flex-direction:column;
+      align-items:stretch;
+      width:40px;
+      min-width:40px;
+      padding:0;
+    }
+
+    .brand-mark{
+      height:46px;
+      display:grid;
+      place-items:center;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      flex:0 0 auto;
+    }
+    .brand-mark svg{
+      width:23px;
+      height:23px;
+      display:block;
+    }
+
+    .nav-item{
+      width:100%;
+      height:44px;
+      padding:0;
+      margin:0;
+      border:none;
+      background:transparent;
+      color:#f1f1f1;
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      transition:background .16s ease, color .16s ease;
+      appearance:none;
+      -webkit-appearance:none;
+    }
+    .nav-item:hover{background:#4b4b4b}
+    .nav-item.active-light{background:#fff;color:#686868}
+    .nav-item.active-light:hover{background:#fff}
+    .nav-item.section-active{background:#474747;color:var(--accent)}
+    .nav-item:focus-visible{outline:1px solid rgba(255,255,255,.35);outline-offset:-2px}
+    .nav-spacer{flex:1}
+
+    .nav-svg{
+      width:20px;
+      height:20px;
+      display:block;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:1.7;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+    }
+    .nav-svg .icon-accent{stroke:var(--accent)}
+    .nav-svg .icon-fill-accent{fill:var(--accent);stroke:none}
+    .nav-svg text{fill:currentColor;stroke:none;font:700 7px Arial, Helvetica, sans-serif}
+
+    .sidebar{
+      background:#f6f6f6;
+      border-right:1px solid var(--line);
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+    }
+
+    .sidebar-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 12px;
+      border-bottom:1px solid var(--line);
+      background:#fff;
+      gap:8px;
+    }
+    .sidebar-title{
+      font-weight:700;
+      letter-spacing:.02em;
+      font-size:14px;
+      text-transform:uppercase;
+    }
+    .close-btn{
+      width:24px;height:24px;border-radius:50%;display:grid;place-items:center;
+      color:#666;cursor:pointer;font-size:16px;
+    }
+
+    .dropdown-lite{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      height:28px;
+      border:1px solid #b7b7b7;
+      background:#fff;
+      padding:0 10px;
+      border-radius:2px;
+      font-size:12px;
+      color:#333;
+      cursor:pointer;
+      min-width:0;
+      gap:10px;
+    }
+    .dropdown-lite::after{
+      content:"▾";
+      color:#777;
+      font-size:11px;
+      flex:0 0 auto;
+    }
+
+    .sidebar-top-select{
+      padding:8px 10px 5px;
+      background:#fff;
+      border-bottom:1px solid var(--line);
+    }
+
+    .search-row{
+      display:flex;
+      gap:6px;
+      padding:8px 10px;
+      border-bottom:1px solid var(--line);
+      background:#fff;
+    }
+    .search-box,.object-filter{
+      height:28px;
+      border:1px solid #b7b7b7;
+      background:#fff;
+      border-radius:2px;
+      display:flex;
+      align-items:center;
+      padding:0 8px;
+      min-width:0;
+      font-size:12px;
+      color:#555;
+      gap:6px;
+    }
+    .search-box{flex:1}
+    .search-box input{
+      border:none;background:transparent;outline:none;width:100%;font:inherit;color:#333;
+    }
+    .search-box input::placeholder{color:#7a7a7a;opacity:1}
+    .filter-btn{
+      width:28px;height:28px;border:1px solid var(--accent-dark);background:var(--accent);color:#fff;border-radius:2px;
+      display:grid;place-items:center;cursor:pointer;font-size:13px;
+    }
+
+    .active-filter{
+      height:28px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      padding:0 10px;
+      background:var(--accent);
+      color:#fff;
+      font-weight:700;
+      font-size:12px;
+      border-bottom:1px solid #dc9a23;
+    }
+    .active-filter small{font-weight:500;opacity:.95}
+
+    .tree{
+      padding:8px 0 0;
+      overflow:auto;
+      flex:1;
+    }
+    .tree-node{
+      font-size:12px;
+      color:#3d3d3d;
+    }
+    .tree-label{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px 10px 14px;
+      cursor:pointer;
+      user-select:none;
+      position:relative;
+    }
+    .tree-label:hover{background:#ececec}
+    .tree-toggle{
+      width:10px; text-align:center; color:#666; font-size:10px;
+    }
+    .tree-children{display:none}
+    .tree-node.open > .tree-children{display:block}
+    .tree-node[data-depth="1"]>.tree-label{padding-left:28px}
+    .tree-node[data-depth="2"]>.tree-label{padding-left:44px}
+    .tree-node[data-depth="3"]>.tree-label{padding-left:62px}
+    .tree-node[data-depth="4"]>.tree-label{padding-left:80px}
+    .tree-node.selected > .tree-label{
+      background:#f5deb5;
+    }
+    .tree-count{
+      margin-left:auto;
+      background:#fff4dc;
+      color:#6b541e;
+      border:1px solid #e4c88b;
+      min-width:22px;height:20px;border-radius:3px;
+      display:grid;place-items:center;
+      font-weight:700;
+      font-size:11px;
+    }
+
+    .add-object-wrap{
+      padding:10px;
+      border-top:1px solid var(--line);
+      background:#fff;
+    }
+    .primary-btn{
+      border:1px solid #222;background:#2d2d2d;color:#fff;height:30px;padding:0 12px;border-radius:2px;
+      font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+      transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+    .primary-btn:hover{background:#1e1e1e;box-shadow:var(--shadow);transform:translateY(-1px)}
+    .primary-btn.secondary{background:#fff;color:#333;border-color:#999}
+    .primary-btn.secondary:hover{background:#f7f7f7}
+    .primary-btn.accent{background:var(--accent);border-color:var(--accent-dark);color:#fff}
+    .primary-btn.accent:hover{background:#e09d22}
+    .primary-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+
+    .main{
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+      min-height:0;
+      position:relative;
+    }
+
+    .topbar{
+      background:#f7f7f7;
+      border-bottom:1px solid var(--line);
+      padding:8px 14px 6px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .page-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      min-width:0;
+    }
+    .crumbs{
+      font-size:12px;
+      color:#6c6c6c;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      white-space:nowrap;
+      min-width:0;
+      overflow:hidden;
+    }
+    .crumbs strong{color:#1e1e1e;font-size:13px}
+    .topbar-sub{
+      font-size:11px;
+      color:#7c7c7c;
+      display:flex;
+      gap:7px;
+      align-items:center;
+      white-space:nowrap;
+      overflow:hidden;
+      padding-left:2px;
+    }
+    .topbar-sub strong{color:#1e1e1e;font-weight:700}
+    .period-chip{
+      display:flex;align-items:center;gap:8px;margin-left:10px;
+      border:1px solid #9c9c9c;background:#fff;height:28px;border-radius:2px;padding:0 10px;font-size:12px;color:#333;
+      flex:0 0 auto;
+    }
+    .period-chip .dot{width:10px;height:10px;border-radius:50%;background:#69b6b8;border:1px solid #528f91}
+
+    .main-content{
+      padding:10px 14px 14px;
+      min-height:0;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      overflow:hidden;
+    }
+
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--line);
+      box-shadow:0 1px 0 rgba(255,255,255,.5) inset;
+      min-width:0;
+    }
+
+    .plan-toolbar{
+      display:flex;
+      align-items:center;
+      gap:16px;
+      padding:8px 12px;
+      border-bottom:1px solid var(--line);
+      font-size:12px;
+      color:#555;
+      min-width:0;
+    }
+    .plan-target{
+      display:flex;align-items:center;gap:10px;min-width:0;
+    }
+    .plan-target .label{font-weight:700;color:#444;text-transform:uppercase;font-size:12px}
+    .goal-select{min-width:250px}
+    .hint-strip{display:flex;align-items:center;gap:8px;color:#575757}
+    .hint-strip::before{content:"|";color:#b7b7b7}
+
+    .section-head{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:8px 12px;border-bottom:1px solid var(--line);font-size:12px;font-weight:700;
+    }
+    .section-head .title{display:flex;align-items:center;gap:8px}
+    .section-head .title::before{content:"▾";color:#555;font-weight:700;font-size:11px}
+    .section-head .mini-hint{font-weight:500;color:#818181}
+
+    .chart-map{
+      display:grid;
+      grid-template-columns:minmax(640px,1fr) 570px;
+      min-height:260px;
+    }
+
+    .chart-wrap{
+      padding:16px 14px 10px 14px;
+      border-right:1px solid var(--line);
+      position:relative;
+      overflow:hidden;
+    }
+    .chart-grid{
+      position:relative;
+      height:235px;
+      padding-left:64px;
+      padding-right:12px;
+      padding-top:6px;
+    }
+    .y-axis{
+      position:absolute;left:0;top:0;bottom:30px;width:62px;
+      display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;
+      color:#696969;font-size:11px;
+    }
+    .y-line{
+      position:absolute;left:64px;right:12px;border-top:1px dashed #e4e4e4;
+    }
+    .bars{
+      position:absolute;left:64px;right:12px;bottom:30px;top:6px;
+      display:flex;align-items:flex-end;gap:28px;
+    }
+    .bar-item{
+      flex:1;min-width:74px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px;
+      cursor:pointer;position:relative;
+    }
+    .bar{
+      width:100%;
+      max-width:122px;
+      background:#4e4e4e;
+      border:1px solid #4a4a4a;
+      transition:height .45s cubic-bezier(.2,.7,.1,1), transform .18s ease, box-shadow .18s ease, background .2s ease;
+      position:relative;
+    }
+    .bar-item:hover .bar{transform:translateY(-2px)}
+    .bar-item.active .bar,
+    .bar-item:hover .bar{background:#2f2f2f;box-shadow:0 10px 18px rgba(0,0,0,.12)}
+    .bar-item.top .bar::after{
+      content:"TOP";
+      position:absolute;top:8px;right:8px;
+      background:var(--accent);color:#fff;font-weight:700;font-size:10px;letter-spacing:.05em;
+      padding:2px 5px;border-radius:999px;
+    }
+    .bar-value{
+      position:absolute;bottom:calc(100% + 6px);
+      left:50%;transform:translateX(-50%);
+      background:#fff;padding:4px 6px;border:1px solid var(--line);border-radius:4px;font-size:11px;box-shadow:var(--shadow);
+      opacity:0;pointer-events:none;transition:.16s ease;white-space:nowrap;
+    }
+    .bar-item:hover .bar-value,.bar-item.active .bar-value{opacity:1}
+    .bar-label{font-size:12px;color:#515151}
+    .bar-rank{font-size:11px;color:#858585;margin-top:-4px}
+
+    .map-wrap{
+      position:relative;
+      overflow:hidden;
+      background:#95c6d8;
+    }
+    .map-tabs{
+      position:absolute;top:10px;left:12px;z-index:2;display:flex;border:1px solid #b8b8b8;border-radius:3px;overflow:hidden;background:#fff;
+    }
+    .map-tab{
+      padding:7px 14px;font-size:12px;cursor:pointer;border-right:1px solid #ddd;user-select:none;background:#fff;
+    }
+    .map-tab:last-child{border-right:none}
+    .map-tab.active{background:#ececec}
+    .map-surface{
+      position:absolute;inset:0;
+      background:
+        radial-gradient(circle at 72% 28%, rgba(40,130,70,.85) 0 9%, transparent 9.6%),
+        radial-gradient(circle at 62% 56%, rgba(56,142,86,.82) 0 7.5%, transparent 8.1%),
+        radial-gradient(circle at 50% 52%, rgba(58,141,89,.8) 0 9%, transparent 9.8%),
+        radial-gradient(circle at 45% 60%, rgba(39,122,70,.84) 0 5.5%, transparent 6.1%),
+        radial-gradient(circle at 40% 42%, rgba(69,147,89,.85) 0 6%, transparent 6.4%),
+        linear-gradient(180deg, #8dd4ee 0%, #a8d8ea 45%, #bfe7f2 100%);
+      filter:saturate(.95);
+    }
+    .map-surface.satellite{
+      background:
+        linear-gradient(130deg, rgba(20,88,47,.82), rgba(63,107,42,.7)),
+        repeating-linear-gradient(35deg, rgba(255,255,255,.04) 0 4px, rgba(0,0,0,.02) 4px 9px),
+        radial-gradient(circle at 65% 45%, rgba(205,172,104,.35), transparent 26%),
+        radial-gradient(circle at 25% 60%, rgba(255,255,255,.08), transparent 20%),
+        linear-gradient(180deg, #224f2f 0%, #395f29 40%, #526130 100%);
+    }
+    .country-label{
+      position:absolute;color:rgba(45,45,45,.9);font-size:12px;font-weight:700;text-shadow:0 1px 0 rgba(255,255,255,.55);
+    }
+    .city-label{position:absolute;color:#444;font-size:10px;text-shadow:0 1px 0 rgba(255,255,255,.7)}
+    .marker{
+      position:absolute;
+      border-radius:50%;
+      background:rgba(62,62,62,.92);
+      border:2px solid rgba(255,255,255,.75);
+      box-shadow:0 0 0 0 rgba(62,62,62,.35);
+      cursor:pointer;
+      transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    .marker::after{
+      content:attr(data-rank);
+      position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-weight:700;font-size:11px;
+    }
+    .marker:hover,.marker.active{transform:scale(1.08);background:#1f1f1f}
+    .marker.active{animation:pulse 1.8s infinite}
+    @keyframes pulse{
+      0%{box-shadow:0 0 0 0 rgba(0,0,0,.28)}
+      70%{box-shadow:0 0 0 12px rgba(0,0,0,0)}
+      100%{box-shadow:0 0 0 0 rgba(0,0,0,0)}
+    }
+
+    .map-footer{
+      position:absolute;left:10px;right:10px;bottom:10px;display:flex;justify-content:space-between;font-size:10px;color:#444;
+      opacity:.8;
+    }
+    .map-expand{
+      position:absolute;right:12px;top:12px;width:28px;height:28px;border:1px solid rgba(0,0,0,.25);background:rgba(255,255,255,.9);border-radius:3px;display:grid;place-items:center;
+      font-size:14px;color:#444;z-index:2;
+    }
+
+    .table-panel{display:flex;flex-direction:column;min-height:0;flex:1}
+    .table-wrap{overflow:auto;min-height:0}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    thead th{
+      position:sticky;top:0;background:#fafafa;border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;color:#606060;font-weight:700;z-index:1;
+    }
+    tbody td{padding:6px 10px;border-bottom:1px solid #ededed;vertical-align:middle}
+    tbody tr{cursor:pointer;transition:background .16s ease}
+    tbody tr:hover{background:#fbf8ef}
+    tbody tr.selected{background:#f7e7c7}
+    tbody tr.top-row td:first-child{font-weight:700}
+    .thumb{
+      width:36px;height:24px;border-radius:3px;border:1px solid rgba(0,0,0,.12);background:#ddd;overflow:hidden;position:relative;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.45);
+    }
+    .thumb::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg, rgba(255,255,255,.45), transparent 35%), linear-gradient(180deg,var(--thumb-a),var(--thumb-b));}
+    .thumb::after{content:attr(data-house);position:absolute;bottom:2px;right:4px;color:#fff;font-size:10px;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+    .class-badge{
+      display:inline-grid;place-items:center;width:18px;height:20px;border-radius:2px;font-weight:700;font-size:11px;color:#fff;background:var(--red);margin-right:3px;
+    }
+    .class-badge.target{background:var(--yellow);color:#333}
+    .metric-badge{
+      display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-radius:999px;background:#f3f3f3;color:#444;font-size:11px;border:1px solid #e6e6e6;
+    }
+    .metric-badge.good{background:var(--green-soft);color:#1b6a39;border-color:#cde8d5}
+    .row-check{font-size:16px;color:#3d3d3d;text-align:center;width:30px}
+    .plan-chip{
+      display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;background:var(--accent-soft);color:#7a5511;border:1px solid #f1d094;font-size:11px;font-weight:700;
+    }
+
+    .sticky-summary{
+      background:#efe5d0;
+      border-top:1px solid #dbc8a6;
+      display:grid;
+      grid-template-columns:1fr auto auto auto;
+      align-items:center;
+      gap:16px;
+      padding:8px 12px;
+      min-height:62px;
+    }
+    .summary-meta{
+      display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-size:12px;min-width:0;
+    }
+    .summary-meta .item{display:flex;gap:6px;align-items:center;white-space:nowrap}
+    .summary-meta .dot{width:10px;height:10px;border-radius:50%;background:#69b6b8;border:1px solid #528f91}
+    .summary-kpi{
+      min-width:210px;text-align:center;border-left:1px solid #dfcfb1;padding-left:16px;
+    }
+    .summary-kpi .value{font-size:32px;color:var(--green);font-weight:700;line-height:1}
+    .summary-kpi .label{font-size:12px;color:#535353;margin-top:4px}
+    .summary-cta{justify-self:end}
+
+    .details-rail{
+      position:absolute;right:0;top:56px;bottom:0;width:22px;border-left:1px solid var(--line);background:#fafafa;display:flex;align-items:center;justify-content:center;color:#707070;font-size:11px;letter-spacing:.12em;writing-mode:vertical-rl;transform:rotate(180deg)
+    }
+
+    .toast{
+      position:absolute;right:20px;top:72px;z-index:30;background:#232323;color:#fff;padding:10px 14px;border-radius:8px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transform:translateY(-8px);transition:.22s ease;
+      font-size:13px;
+    }
+    .toast.show{opacity:1;transform:translateY(0)}
+    .toast strong{color:#ffd284}
+
+    .coachmark{
+      position:absolute;left:50%;bottom:82px;transform:translateX(-50%);z-index:5;
+      background:#232323;color:#fff;padding:10px 14px;border-radius:999px;font-size:12px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;
+    }
+    .coachmark button{
+      border:none;background:#fff;color:#222;border-radius:999px;padding:6px 10px;font-weight:700;font-size:11px;cursor:pointer;
+    }
+
+    .spark{
+      display:inline-flex;align-items:center;gap:5px;color:#1b6a39;font-weight:700;font-size:11px;background:#e7f6ec;border:1px solid #cde8d5;padding:2px 6px;border-radius:999px;
+    }
+
+    .app.sidebar-collapsed{grid-template-columns:40px 0 minmax(0,1fr)}
+    .app.sidebar-collapsed .sidebar{overflow:hidden;border-right:none}
+    .hidden{display:none !important}
+
+    @media (max-width: 1480px){
+      .app{grid-template-columns:40px 270px minmax(0,1fr)}
+      .chart-map{grid-template-columns:minmax(520px,1fr) 440px}
+      .summary-kpi{min-width:180px}
+    }
+    @media (max-width: 1280px){
+      body{overflow:auto}
+      .app{grid-template-columns:40px 252px minmax(0,1fr)}
+      .main-content{overflow:auto}
+      .chart-map{grid-template-columns:1fr}
+      .map-wrap{min-height:260px}
+      .sticky-summary{flex-wrap:wrap;row-gap:10px}
+      .summary-cta{margin-left:auto}
+    }
+    @media (max-width: 1080px){
+      .app{grid-template-columns:40px 230px minmax(0,1fr)}
+      .plan-toolbar{flex-wrap:wrap}
+      .goal-select{min-width:220px}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="iconbar">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M4 4L12.5 8.7L8.4 18.8L4 4Z" fill="#f0ab2d"></path>
+          <path d="M11.3 9.1L20 8.1L14 12.7L16.4 18.2L11.3 9.1Z" fill="#d49a23"></path>
+          <path d="M7.2 9.8L13.2 11.6" stroke="#ffd287" stroke-width="1.2" stroke-linecap="round"></path>
+        </svg>
+      </div>
+      <button class="nav-item active-light" type="button" aria-label="Strukturbäume" title="Strukturbäume">
+        <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+          <circle class="icon-accent" cx="12" cy="5.5" r="1.8"></circle>
+          <circle cx="5.5" cy="18.2" r="1.8"></circle>
+          <circle cx="12" cy="18.2" r="1.8"></circle>
+          <circle cx="18.5" cy="18.2" r="1.8"></circle>
+          <path d="M12 7.4V11.2M12 11.2H5.5M12 11.2H18.5M12 11.2V16.1"></path>
+        </svg>
+      </button>
+      <button class="nav-item" type="button" aria-label="Historie" title="Historie">
+        <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="13" r="6.6"></circle>
+          <path d="M12 13L15.2 9.8M9 3.2H15M12 3.2V5.5M17.2 6.4L19.1 4.5"></path>
+          <circle cx="12" cy="13" r="0.8"></circle>
+        </svg>
+      </button>
+      <button class="nav-item" type="button" aria-label="Dokumente" title="Dokumente">
+        <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 3.5H14L18 7.6V20.5H7Z"></path>
+          <path d="M14 3.5V7.6H18"></path>
+          <path d="M9.6 11.3H15.4M9.6 14.2H15.4M9.6 17.1H14"></path>
+        </svg>
+      </button>
+      <button class="nav-item" type="button" aria-label="Portfoliovergleich" title="Portfoliovergleich">
+        <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="4.5" y="5" width="6.6" height="6.1"></rect>
+          <rect x="12.9" y="5" width="6.6" height="6.1"></rect>
+          <rect x="4.5" y="12.9" width="6.6" height="6.1"></rect>
+          <rect x="12.9" y="12.9" width="6.6" height="6.1"></rect>
+          <text x="6.45" y="9.55">A</text>
+          <text x="14.8" y="17.45">B</text>
+        </svg>
+      </button>
+      <button class="nav-item" type="button" aria-label="Maßnahmenpakete" title="Maßnahmenpakete">
+        <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4.7 14.7L11.2 11.8L16.7 6.3L20 9.6L14.4 15.2L11.7 21.3L8.8 18.4L4.7 14.7Z"></path>
+          <path d="M4 8.7L9.8 6.1M6.6 17.1L12.7 14.4"></path>
+        </svg>
+      </button>
+      <button class="nav-item" type="button" aria-label="Dokumentenauswertung" title="Dokumentenauswertung">
+        <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 3.5H14L18 7.6V20.5H7Z"></path>
+          <path d="M14 3.5V7.6H18"></path>
+          <path d="M9.3 16.8V12.8M12.1 16.8V10.6M14.9 16.8V13.9"></path>
+        </svg>
+      </button>
+      <button class="nav-item" type="button" aria-label="Analysen" title="Analysen">
+        <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 18.7H19"></path>
+          <path d="M6.2 16.1L10.1 12.2L13 14.4L17.8 8.7"></path>
+        </svg>
+      </button>
+      <button class="nav-item section-active" type="button" aria-label="Zielfokus" title="Zielfokus">
+        <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="7"></circle>
+          <circle cx="12" cy="12" r="2.2"></circle>
+          <path d="M12 5V7.3M12 16.7V19M5 12H7.3M16.7 12H19"></path>
+        </svg>
+      </button>
+      <button class="nav-item" type="button" aria-label="Knotenanalyse" title="Knotenanalyse">
+        <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="7" cy="8" r="1.7"></circle>
+          <circle cx="16.8" cy="7" r="1.7"></circle>
+          <circle cx="12.2" cy="15.7" r="1.7"></circle>
+          <path d="M8.6 8.3L15 7.2M8 9.4L11.2 14.3M15.9 8.5L13.1 14.4"></path>
+          <path d="M5 18.8H19"></path>
+        </svg>
+      </button>
+      <button class="nav-item" type="button" aria-label="Budgetplanung" title="Budgetplanung">
+        <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 18.5H19"></path>
+          <path d="M7 17V11.7M11.2 17V8.8M15.4 17V6.8M19 17V10"></path>
+        </svg>
+      </button>
+      <button class="nav-item" type="button" aria-label="Investrechner" title="Investrechner">
+        <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="6" y="3.8" width="12" height="16.4" rx="1.2"></rect>
+          <path d="M8.5 7.4H15.5"></path>
+          <path d="M8.4 11.1H10.4M13.6 11.1H15.6M8.4 14.2H10.4M13.6 14.2H15.6M8.4 17.3H10.4M13.6 17.3H15.6"></path>
+        </svg>
+      </button>
+      <button class="nav-item" type="button" aria-label="Einstellungen" title="Einstellungen">
+        <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="2.7"></circle>
+          <path d="M12 4.5V6.2M12 17.8V19.5M4.5 12H6.2M17.8 12H19.5M6.9 6.9L8 8M16 16L17.1 17.1M17.1 6.9L16 8M8 16L6.9 17.1"></path>
+        </svg>
+      </button>
+      <div class="nav-spacer"></div>
+      <button class="nav-item" type="button" aria-label="Profil" title="Profil">
+        <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="8.1" r="3"></circle>
+          <path d="M6.1 18.6C7.6 15.8 10.1 14.5 12 14.5C13.9 14.5 16.4 15.8 17.9 18.6"></path>
+        </svg>
+      </button>
+      <button class="nav-item" type="button" aria-label="Support" title="Support">
+        <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6.4 11.7V10.6A5.6 5.6 0 0 1 12 5A5.6 5.6 0 0 1 17.6 10.6V11.7"></path>
+          <rect x="5" y="11.1" width="3.2" height="5.5" rx="1"></rect>
+          <rect x="15.8" y="11.1" width="3.2" height="5.5" rx="1"></rect>
+          <path d="M18.6 16.1C18.3 18.6 16.3 20 13.5 20H11.8"></path>
+          <rect x="10.2" y="18.5" width="4.1" height="2" rx="0.8"></rect>
+        </svg>
+      </button>
+      <button class="nav-item" type="button" aria-label="Abmelden" title="Abmelden">
+        <svg class="nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M10.5 5.3H6V18.7H10.5"></path>
+          <path d="M13.2 8.4L17 12L13.2 15.6"></path>
+          <path d="M9.5 12H17"></path>
+        </svg>
+      </button>
+    </aside>
+
+    <aside class="sidebar">
+      <div class="sidebar-head">
+        <div class="sidebar-title">STRUKTURBÄUME</div>
+        <div class="close-btn">×</div>
+      </div>
+      <div class="sidebar-top-select">
+        <div class="dropdown-lite">Geographisch</div>
+      </div>
+      <div class="search-row">
+        <label class="search-box"><span>🔍</span><input id="searchInput" type="text" placeholder="Suche Objekt"></label>
+        <div class="object-filter">Objekte</div>
+        <div class="filter-btn">⏷</div>
+      </div>
+      <div class="active-filter">Aktiver Filter: Nur Gebäude <small>◎</small></div>
+      <div class="tree" id="treePanel">
+        <div class="tree-node open" data-depth="0">
+          <div class="tree-label"><span class="tree-toggle">▾</span><span>Europa</span></div>
+          <div class="tree-children">
+            <div class="tree-node open" data-depth="1">
+              <div class="tree-label"><span class="tree-toggle">▾</span><span>Deutschland</span></div>
+              <div class="tree-children">
+                <div class="tree-node open" data-depth="2">
+                  <div class="tree-label"><span class="tree-toggle">▾</span><span>Wolfsburg</span></div>
+                  <div class="tree-children">
+                    <div class="tree-node open" data-depth="3">
+                      <div class="tree-label"><span class="tree-toggle">▾</span><span>Quartier Entenbach</span></div>
+                      <div class="tree-children">
+                        <div class="tree-node selected" data-depth="4">
+                          <div class="tree-label"><span class="tree-toggle">›</span><span>WE 2300</span><span class="tree-count">5</span></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="add-object-wrap">
+        <button class="primary-btn" id="addTopObjectBtn">+ OBJEKT HINZUFÜGEN</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="toast" id="toast"></div>
+      <div class="topbar">
+        <div class="page-head">
+          <div class="crumbs">
+            <span>Jährliche Maßnahmenpläne</span>
+            <span>›</span>
+            <strong>Maßnahmenplan 2027</strong>
+          </div>
+          <div class="period-chip"><span class="dot"></span><span>2027.02</span><span style="margin-left:8px;color:#777">▾</span></div>
+        </div>
+        <div class="topbar-sub">
+          <span>Europa</span>
+          <span>›</span>
+          <span>Deutschland</span>
+          <span>›</span>
+          <span>…</span>
+          <span>›</span>
+          <span>Quartier Entenbach</span>
+          <span>›</span>
+          <strong>WE 2300</strong>
+        </div>
+      </div>
+
+      <div class="main-content">
+        <section class="panel" style="display:flex;flex-direction:column;min-height:0;flex:1;">
+          <div class="plan-toolbar">
+            <div class="plan-target">
+              <div class="label">Planungsziel</div>
+              <div class="dropdown-lite goal-select" id="goalSelectLabel">CO2-Einsparung (absolut)</div>
+            </div>
+            <div class="hint-strip" id="goalHint">Die Reihenfolge der Objekte basiert auf ihrem Optimierungspotenzial für das ausgewählte Ziel.</div>
+          </div>
+          <div class="section-head">
+            <div class="title">Ranking-Balkendiagramm und Karte</div>
+            <div class="mini-hint" id="selectionHint">Tipp: Klicken Sie auf Balken oder Tabellenzeilen, um Objekte in die Planung zu übernehmen.</div>
+          </div>
+          <div class="chart-map">
+            <div class="chart-wrap">
+              <div class="chart-grid">
+                <div class="y-axis" id="yAxis"></div>
+                <div class="y-line" style="top:6px"></div>
+                <div class="y-line" style="top:54px"></div>
+                <div class="y-line" style="top:102px"></div>
+                <div class="y-line" style="top:150px"></div>
+                <div class="y-line" style="top:198px"></div>
+                <div class="bars" id="barChart"></div>
+              </div>
+            </div>
+            <div class="map-wrap">
+              <div class="map-tabs">
+                <div class="map-tab active" data-map-mode="map">Karte</div>
+                <div class="map-tab" data-map-mode="satellite">Satellit</div>
+              </div>
+              <div class="map-expand">⤢</div>
+              <div class="map-surface" id="mapSurface"></div>
+              <div class="country-label" style="left:42%;top:32%">Deutschland</div>
+              <div class="country-label" style="left:62%;top:46%;font-size:11px">Tschechien</div>
+              <div class="country-label" style="left:54%;top:58%;font-size:11px">Österreich</div>
+              <div class="country-label" style="left:32%;top:64%;font-size:11px">Schweiz</div>
+              <div class="country-label" style="left:17%;top:20%;font-size:11px">Niederlande</div>
+              <div class="country-label" style="left:14%;top:41%;font-size:11px">Belgien</div>
+              <div class="country-label" style="left:70%;top:25%;font-size:11px">Polen</div>
+              <div class="city-label" style="left:64%;top:12%">Berlin</div>
+              <div class="city-label" style="left:48%;top:58%">München</div>
+              <div class="city-label" style="left:38%;top:14%">Hamburg</div>
+              <div class="city-label" style="left:49%;top:42%">Prag</div>
+              <div class="city-label" style="left:22%;top:62%">Paris</div>
+              <div class="city-label" style="left:17%;top:31%">Birmingham</div>
+              <div id="mapMarkers"></div>
+              <div class="map-footer"><span>Kurzbefehle</span><span>Kartendaten ©2026 GeoBasis-DE/BKG (©2009), Google</span><span>Nutzungsbedingungen</span></div>
+            </div>
+          </div>
+
+          <div class="section-head">
+            <div class="title">Objektliste nach Ziel geordnet</div>
+            <div class="mini-hint"><span class="spark">▲ Demo ready</span> Prioritäten, Kosten und Wirkung live berechnen</div>
+          </div>
+          <div class="table-panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width:56px">Rank</th>
+                    <th style="width:48px"></th>
+                    <th style="width:70px">WE</th>
+                    <th style="width:60px">UE</th>
+                    <th>Adresse</th>
+                    <th style="width:210px">Primärer Energieträger Heizung</th>
+                    <th style="width:220px">Energieeffizienzklasse basierend auf AIBATROS-Bedarf</th>
+                    <th id="metricHeader" style="width:160px">CO2-Einsparung (absolut)</th>
+                    <th style="width:64px"></th>
+                  </tr>
+                </thead>
+                <tbody id="objectsTable"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="sticky-summary">
+            <div class="summary-meta">
+              <div class="item"><strong>MAßNAHMENPLAN 2027</strong></div>
+              <div class="item"><span class="dot"></span><span>2027.02</span></div>
+              <div class="item"><span>geplante Objekte:</span><strong id="plannedCount">1</strong></div>
+              <div class="item"><span>Planungsziel:</span><strong id="planGoalLabel">CO2-Einsparung (absolut)</strong></div>
+              <div class="item"><span>KPI-Berechnung basierend auf geplanten Objekten</span></div>
+            </div>
+            <div class="summary-kpi">
+              <div class="value" id="summaryAbs">146 T kg</div>
+              <div class="label">CO2 Einsparung gegenüber Ist-Zustand (absolut)</div>
+            </div>
+            <div class="summary-kpi" style="min-width:180px">
+              <div class="value" id="summaryPct">97 %</div>
+              <div class="label">CO2 Einsparung gegenüber Ist-Zustand (%)</div>
+            </div>
+            <div class="summary-cta">
+              <button class="primary-btn secondary" id="showPlanningBtn">PLANUNG ANZEIGEN</button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="coachmark" id="coachmark">Starten Sie die Demo mit einem Klick auf ein Gebäude. Anschließend sehen Sie direkt die Planung in der Bearbeitung. <button id="coachDismiss">Verstanden</button></div>
+      <div class="details-rail">DETAILS</div>
+    </main>
+  </div>
+
+  <script>
+    const DEMO_STORAGE_KEY = 'aibatros-demo-state-v3';
+
+    const portfolio = [
+      {
+        id: '113', we: '2300', ue: '113', address: 'Entenbachstraße 21', heating: 'Öl', currentClass: 'H', targetClass: 'D',
+        co2Abs: 594538, co2Pct: 68, roi: 24, wear: 52, cost: 2480000, year: 2030, baselineCo2: 874000,
+        endEnergy: 118, primaryEnergy: 154, resultCo2M2: 24, currentCo2M2: 76, latitudeX: 48, latitudeY: 58,
+        thumbA: '#94765a', thumbB: '#6d563d', note: 'größter absoluter Hebel', packageProfile: 'Dekarbonisierung + Hülle'
+      },
+      {
+        id: '104', we: '2300', ue: '104', address: 'Entenbachstraße 22', heating: 'Fern-/Nahwärme', currentClass: 'H', targetClass: 'E',
+        co2Abs: 235851, co2Pct: 41, roi: 19, wear: 25, cost: 1260000, year: 2028, baselineCo2: 575000,
+        endEnergy: 162, primaryEnergy: 204, resultCo2M2: 44, currentCo2M2: 75, latitudeX: 53, latitudeY: 54,
+        thumbA: '#8db0cb', thumbB: '#526579', note: 'kurze Umsetzungsdauer', packageProfile: 'Optimierung Bestand'
+      },
+      {
+        id: '105', we: '2300', ue: '105', address: 'Entenbachstraße 23', heating: 'Öl', currentClass: 'H', targetClass: 'E',
+        co2Abs: 184709, co2Pct: 39, roi: 17, wear: 33, cost: 1110000, year: 2029, baselineCo2: 476000,
+        endEnergy: 176, primaryEnergy: 214, resultCo2M2: 46, currentCo2M2: 75, latitudeX: 59, latitudeY: 51,
+        thumbA: '#cc8f5f', thumbB: '#845438', note: 'gute Kosten-Wirkung', packageProfile: 'Heiztechnik + Fenster'
+      },
+      {
+        id: '102', we: '2300', ue: '102', address: 'Entenbachstraße 20', heating: 'Öl', currentClass: 'H', targetClass: 'C',
+        co2Abs: 145521, co2Pct: 97, roi: 32, wear: 41, cost: 1364000, year: 2029, baselineCo2: 150000,
+        endEnergy: 89, primaryEnergy: 121, resultCo2M2: 4, currentCo2M2: 131, latitudeX: 46, latitudeY: 46,
+        thumbA: '#a98c71', thumbB: '#5e4e3d', note: 'bestes Zielerreichungspotenzial', packageProfile: 'Wärmewende-Paket'
+      },
+      {
+        id: '101', we: '2300', ue: '101', address: 'Entenbachstraße 18', heating: 'Gas zentral', currentClass: 'H', targetClass: 'F',
+        co2Abs: 32580, co2Pct: 18, roi: 12, wear: 12, cost: 210000, year: 2027, baselineCo2: 181000,
+        endEnergy: 220, primaryEnergy: 256, resultCo2M2: 58, currentCo2M2: 71, latitudeX: 44, latitudeY: 42,
+        thumbA: '#8b8b8b', thumbB: '#555555', note: 'Quick Win', packageProfile: 'Regelung + Kellerdecke'
+      }
+    ];
+
+    const goals = {
+      co2Abs: { label: 'CO2-Einsparung (absolut)', metric: 'co2Abs', unit: 'kg', formatter: value => formatKg(value), description: 'Die Reihenfolge der Objekte basiert auf ihrem Optimierungspotenzial für das ausgewählte Ziel.' },
+      co2Pct: { label: 'CO2-Einsparung (%)', metric: 'co2Pct', unit: '%', formatter: value => `${Math.round(value)} %`, description: 'Die Reihenfolge der Objekte basiert auf ihrem Zielerreichungsgrad für CO2-Reduktion.' },
+      roi: { label: 'Investitionswirkung pro Euro', metric: 'roi', unit: 'score', formatter: value => `${Math.round(value)} Punkte`, description: 'Die Reihenfolge der Objekte basiert auf dem Verhältnis aus Wirkung, Kosten und Umsetzungszeit.' },
+      wear: { label: 'Abnutzungsgrad Reduzierung', metric: 'wear', unit: '%', formatter: value => `${Math.round(value)} %`, description: 'Die Reihenfolge der Objekte basiert auf der erwarteten Reduktion des technischen Risikos.' }
+    };
+
+    const state = loadState();
+    if (!Array.isArray(state.selectedIds) || !state.selectedIds.length) state.selectedIds = ['102'];
+    if (!state.goal || !goals[state.goal]) state.goal = 'co2Abs';
+    if (!state.focusId) state.focusId = state.selectedIds[0];
+    if (!state.variantStatus) state.variantStatus = 'In Planung';
+    saveState();
+
+    const searchInput = document.getElementById('searchInput');
+    const objectsTable = document.getElementById('objectsTable');
+    const barChart = document.getElementById('barChart');
+    const mapMarkers = document.getElementById('mapMarkers');
+    const yAxis = document.getElementById('yAxis');
+    const goalLabel = document.getElementById('goalSelectLabel');
+    const goalHint = document.getElementById('goalHint');
+    const metricHeader = document.getElementById('metricHeader');
+    const planGoalLabel = document.getElementById('planGoalLabel');
+    const plannedCount = document.getElementById('plannedCount');
+    const summaryAbs = document.getElementById('summaryAbs');
+    const summaryPct = document.getElementById('summaryPct');
+    const toast = document.getElementById('toast');
+    const showPlanningBtn = document.getElementById('showPlanningBtn');
+    const mapSurface = document.getElementById('mapSurface');
+    const coachmark = document.getElementById('coachmark');
+    const appShell = document.querySelector('.app');
+    const closeTreeBtn = document.querySelector('.close-btn');
+    const treeNavBtn = document.querySelector('.iconbar .nav-item');
+
+    const goalOrder = ['co2Abs', 'co2Pct', 'roi', 'wear'];
+    goalLabel.addEventListener('click', () => {
+      const index = goalOrder.indexOf(state.goal);
+      state.goal = goalOrder[(index + 1) % goalOrder.length];
+      saveState();
+      render();
+      showToast(`Planungsziel gewechselt auf <strong>${goals[state.goal].label}</strong>`);
+    });
+
+    document.querySelectorAll('.map-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.map-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        mapSurface.classList.toggle('satellite', tab.dataset.mapMode === 'satellite');
+      });
+    });
+
+    if (closeTreeBtn) closeTreeBtn.addEventListener('click', () => appShell.classList.toggle('sidebar-collapsed'));
+    if (treeNavBtn) treeNavBtn.addEventListener('click', () => {
+      if (appShell.classList.contains('sidebar-collapsed')) appShell.classList.remove('sidebar-collapsed');
+    });
+
+    document.getElementById('coachDismiss').addEventListener('click', () => {
+      coachmark.classList.add('hidden');
+      localStorage.setItem('aibatros-demo-coach-dismissed', '1');
+    });
+    if (localStorage.getItem('aibatros-demo-coach-dismissed') === '1') {
+      coachmark.classList.add('hidden');
+    }
+
+    document.getElementById('addTopObjectBtn').addEventListener('click', () => {
+      const sorted = getFilteredPortfolio();
+      const candidate = sorted.find(item => !state.selectedIds.includes(item.id));
+      if (!candidate) {
+        showToast('Alle sichtbaren Objekte sind bereits in der Planung.');
+        return;
+      }
+      state.selectedIds.push(candidate.id);
+      state.focusId = candidate.id;
+      saveState();
+      render();
+      showToast(`<strong>${candidate.address}</strong> wurde der Planung hinzugefügt.`);
+    });
+
+    showPlanningBtn.addEventListener('click', () => {
+      saveState();
+      window.location.href = '506.html';
+    });
+
+    searchInput.addEventListener('input', render);
+
+    document.querySelectorAll('.tree-label').forEach(label => {
+      label.addEventListener('click', (event) => {
+        const node = event.currentTarget.parentElement;
+        if (node.querySelector('.tree-children')) {
+          node.classList.toggle('open');
+          const toggle = node.querySelector(':scope > .tree-label .tree-toggle');
+          if (toggle) toggle.textContent = node.classList.contains('open') ? '▾' : '▸';
+        }
+      });
+    });
+
+    function getFilteredPortfolio() {
+      const goal = goals[state.goal];
+      const term = searchInput.value.trim().toLowerCase();
+      const filtered = portfolio.filter(item => {
+        if (!term) return true;
+        const text = `${item.address} ${item.heating} ${item.ue} ${item.we}`.toLowerCase();
+        return text.includes(term);
+      });
+      return filtered.sort((a,b) => b[goal.metric] - a[goal.metric]);
+    }
+
+    function render() {
+      const sorted = getFilteredPortfolio();
+      const goal = goals[state.goal];
+      goalLabel.textContent = goal.label;
+      goalHint.textContent = goal.description;
+      metricHeader.textContent = goal.label;
+      planGoalLabel.textContent = goal.label;
+      renderYAxis(sorted, goal);
+      renderBars(sorted, goal);
+      renderMap(sorted, goal);
+      renderTable(sorted, goal);
+      renderSummary();
+      showPlanningBtn.disabled = state.selectedIds.length === 0;
+    }
+
+    function renderYAxis(sorted, goal) {
+      if (!sorted.length) {
+        yAxis.innerHTML = '<span>0</span>';
+        return;
+      }
+      const max = sorted[0][goal.metric];
+      const labels = Array.from({length: 5}, (_, i) => max - (max / 4) * i);
+      yAxis.innerHTML = labels.map(value => `<span>${axisFormat(value, goal)}</span>`).join('');
+    }
+
+    function renderBars(sorted, goal) {
+      if (!sorted.length) {
+        barChart.innerHTML = '<div style="padding:40px;color:#777;font-size:13px">Keine Objekte für die aktuelle Filterung gefunden.</div>';
+        return;
+      }
+      const max = sorted[0][goal.metric] || 1;
+      barChart.innerHTML = sorted.map((item, index) => {
+        const height = Math.max(10, Math.round(item[goal.metric] / max * 198));
+        const selected = state.selectedIds.includes(item.id);
+        const active = item.id === state.focusId;
+        return `
+          <div class="bar-item ${active ? 'active' : ''} ${index===0 ? 'top' : ''}" data-id="${item.id}">
+            <div class="bar-value">${item.address} · ${goal.formatter(item[goal.metric])}</div>
+            <div class="bar" style="height:${height}px"></div>
+            <div class="bar-label">${index + 1}</div>
+            <div class="bar-rank">${selected ? 'in Planung' : 'nicht geplant'}</div>
+          </div>`;
+      }).join('');
+      barChart.querySelectorAll('.bar-item').forEach(el => {
+        el.addEventListener('click', () => toggleSelection(el.dataset.id));
+        el.addEventListener('mouseenter', () => setFocus(el.dataset.id));
+      });
+    }
+
+    function renderMap(sorted, goal) {
+      const max = sorted[0]?.[goal.metric] || 1;
+      mapMarkers.innerHTML = sorted.map((item, index) => {
+        const size = Math.max(16, Math.round(item[goal.metric] / max * 42));
+        const left = `${item.latitudeX}%`;
+        const top = `${item.latitudeY}%`;
+        const active = item.id === state.focusId;
+        return `<div class="marker ${active ? 'active' : ''}" data-id="${item.id}" data-rank="${index + 1}" title="${item.address}: ${goal.formatter(item[goal.metric])}" style="left:calc(${left} - ${size/2}px);top:calc(${top} - ${size/2}px);width:${size}px;height:${size}px"></div>`;
+      }).join('');
+      mapMarkers.querySelectorAll('.marker').forEach(marker => {
+        marker.addEventListener('mouseenter', () => setFocus(marker.dataset.id));
+        marker.addEventListener('click', () => toggleSelection(marker.dataset.id));
+      });
+    }
+
+    function renderTable(sorted, goal) {
+      objectsTable.innerHTML = sorted.map((item, index) => {
+        const selected = state.selectedIds.includes(item.id);
+        const top = index === 0;
+        return `
+          <tr class="${selected ? 'selected' : ''} ${top ? 'top-row' : ''}" data-id="${item.id}">
+            <td>${index + 1}</td>
+            <td><div class="thumb" data-house="${item.ue}" style="--thumb-a:${item.thumbA};--thumb-b:${item.thumbB}"></div></td>
+            <td>${item.we}</td>
+            <td>${item.ue}</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span>${item.address}</span>
+                ${top ? '<span class="plan-chip">Top Priorität</span>' : ''}
+              </div>
+              <div style="color:#898989;font-size:11px;margin-top:2px">${item.note}</div>
+            </td>
+            <td>${item.heating}</td>
+            <td>
+              <span class="class-badge">${item.currentClass}</span>
+              ${selected ? '<span style="color:#8d8d8d;margin-right:4px">→</span><span class="class-badge target">' + item.targetClass + '</span>' : ''}
+            </td>
+            <td>${goal.formatter(item[goal.metric])}</td>
+            <td class="row-check">${selected ? '✓' : ''}</td>
+          </tr>`;
+      }).join('');
+      objectsTable.querySelectorAll('tr').forEach(row => {
+        row.addEventListener('click', () => toggleSelection(row.dataset.id));
+        row.addEventListener('mouseenter', () => setFocus(row.dataset.id));
+      });
+    }
+
+    function renderSummary() {
+      plannedCount.textContent = state.selectedIds.length;
+      const selected = portfolio.filter(item => state.selectedIds.includes(item.id));
+      const totalAbs = selected.reduce((sum, item) => sum + item.co2Abs, 0);
+      const totalBase = selected.reduce((sum, item) => sum + item.baselineCo2, 0) || 1;
+      const pct = Math.round(totalAbs / totalBase * 100);
+      animateNumber(summaryAbs, formatTkg(totalAbs), summaryAbs.textContent);
+      animateNumber(summaryPct, `${pct} %`, summaryPct.textContent);
+    }
+
+    function toggleSelection(id) {
+      const item = portfolio.find(obj => obj.id === id);
+      const exists = state.selectedIds.includes(id);
+      if (exists) {
+        state.selectedIds = state.selectedIds.filter(selectedId => selectedId !== id);
+        if (state.focusId === id) state.focusId = state.selectedIds[0] || portfolio[0].id;
+        showToast(`<strong>${item.address}</strong> aus der Planung entfernt.`);
+      } else {
+        state.selectedIds.push(id);
+        state.focusId = id;
+        showToast(`<strong>${item.address}</strong> in die Planung aufgenommen.`);
+      }
+      saveState();
+      render();
+      if (!localStorage.getItem('aibatros-demo-coach-dismissed')) {
+        coachmark.classList.add('hidden');
+        localStorage.setItem('aibatros-demo-coach-dismissed', '1');
+      }
+    }
+
+    function setFocus(id) {
+      if (state.focusId === id) return;
+      state.focusId = id;
+      saveState();
+      render();
+    }
+
+    function axisFormat(value, goal) {
+      if (goal.metric === 'co2Abs') return `${Math.round(value).toLocaleString('de-DE')} kg`;
+      if (goal.metric === 'co2Pct' || goal.metric === 'wear') return `${Math.round(value)} %`;
+      return `${Math.round(value)} P`;
+    }
+
+    function formatKg(value) {
+      return `${Math.round(value).toLocaleString('de-DE')} kg`;
+    }
+
+    function formatTkg(value) {
+      return `${Math.round(value / 1000).toLocaleString('de-DE')} T kg`;
+    }
+
+    function showToast(message) {
+      toast.innerHTML = message;
+      toast.classList.add('show');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function animateNumber(element, newValue, currentValue) {
+      if (currentValue === newValue) return;
+      element.style.transform = 'scale(1.04)';
+      element.style.transition = 'transform .18s ease';
+      element.textContent = newValue;
+      setTimeout(() => element.style.transform = 'scale(1)', 180);
+    }
+
+    function loadState() {
+      try {
+        return JSON.parse(localStorage.getItem(DEMO_STORAGE_KEY) || '{}');
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(DEMO_STORAGE_KEY, JSON.stringify(state));
+    }
+
+    render();
+  </script>
+</body>
+</html>
